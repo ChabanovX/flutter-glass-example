@@ -1,8 +1,5 @@
-import 'dart:io' show Platform, isIOS;
-
+import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:tahoe_effects/tahoe_effects.dart';
 
 void main() {
@@ -19,13 +16,9 @@ class App extends StatefulWidget {
 class _AppState extends State<App> {
   final _api = TahoeEffects();
 
-  String msg = "Undefined";
-
   LiquidGlassMaterial glassMaterial = LiquidGlassMaterial.popover;
   IOSBlurStyle blurStyle = IOSBlurStyle.systemThickMaterial;
   bool followSomeShit = true;
-
-  static const items = LiquidGlassMaterial.values;
 
   Future<void> applyOptions() async {
     final opts = LiquidGlassOptions(
@@ -36,6 +29,10 @@ class _AppState extends State<App> {
     _api.apply(opts);
   }
 
+  Future<void> removeOptions() async {
+    _api.remove();
+  }
+
   @override
   Widget build(BuildContext context) {
     return CupertinoApp(
@@ -43,64 +40,122 @@ class _AppState extends State<App> {
         child: CupertinoPageScaffold(
           backgroundColor: CupertinoColors.transparent,
           navigationBar: CupertinoNavigationBar.large(
-            largeTitle: Text('Some Title'),
+            largeTitle: Text('Tahoe Glass Example'),
           ),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Flexible(
-                  flex: 1,
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        for (var e in items)
-                          Column(
-                            children: [
-                              CupertinoButton.filled(
-                                onPressed: () async {
-                                  setState(() {
-                                    glassMaterial = e;
-                                  });
-                                  await applyOptions();
-                                },
-                                child: SizedBox(width: 200, child: Center(child: Text(e.name))),
-                              ),
-                              SizedBox(height: 8),
-                            ],
-                          ),
-                        Text('Current value: $glassMaterial'),
-                        // CupertinoSegmentedControl(
-                        //   children: {for (var e in items) e: Text(e.name)},
-                        //   onValueChanged: (v) async {
-                        //     setState(() {
-                        //       glassMaterial = v;
-                        //     });
-                        //     await applyOptions();
-                        //   },
-                        // ),
-                        SizedBox(height: 24),
-                        if (Platform.isIOS) ...[
-                          Text('Current value: $blurStyle'),
-                          CupertinoSegmentedControl(
-                            children: {
-                              for (var e in IOSBlurStyle.values)
-                                e: Text(e.name),
-                            },
-                            onValueChanged: (v) async {
+          child: SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: MediaQuery.of(context).size.height,
+              ),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    for (var e in LiquidGlassMaterial.values)
+                      Column(
+                        children: [
+                          CupertinoButton.filled(
+                            onPressed: () async {
                               setState(() {
-                                blurStyle = v;
+                                glassMaterial = e;
                               });
                               await applyOptions();
                             },
+                            child: SizedBox(
+                              width: 200,
+                              child: Center(child: Text(e.name)),
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                        ],
+                      ),
+                    Text('Current value: $glassMaterial'),
+                    if (Platform.isIOS) ...[
+                      SizedBox(height: 24),
+                      Text('Current value: $blurStyle'),
+                      CupertinoSegmentedControl(
+                        children: {
+                          for (var e in IOSBlurStyle.values) e: Text(e.name),
+                        },
+                        onValueChanged: (v) async {
+                          setState(() {
+                            blurStyle = v;
+                          });
+                          await applyOptions();
+                        },
+                      ),
+                    ],
+                    SizedBox(height: 32),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: CupertinoColors.systemBackground,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: EdgeInsets.all(12),
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text('Follows Apps active state:'),
+                              SizedBox(width: 16),
+                              CupertinoSwitch(
+                                value: followSomeShit,
+                                onChanged: (val) async {
+                                  setState(() {
+                                    followSomeShit = val;
+                                  });
+                                  await applyOptions();
+                                },
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            'Whether to change background to inactive when focus disappears.',
+                            style: CupertinoTheme.of(
+                              context,
+                            ).textTheme.tabLabelTextStyle,
                           ),
                         ],
-                      ],
+                      ),
                     ),
-                  ),
+                    SizedBox(height: 32),
+                    CupertinoButton(
+                      child: SizedBox(
+                        width: 200,
+                        child: Column(
+                          children: [
+                            Center(
+                              child: Text(
+                                'Remove options',
+                                style: TextStyle(
+                                  color: CupertinoColors.destructiveRed,
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              'Removes native view completely',
+                              style: CupertinoTheme.of(
+                                context,
+                              ).textTheme.tabLabelTextStyle,
+                            ),
+                            Text(
+                              'Might produce unexpected behavior',
+                              style: CupertinoTheme.of(
+                                context,
+                              ).textTheme.tabLabelTextStyle,
+                            ),
+                          ],
+                        ),
+                      ),
+                      onPressed: () async => await removeOptions(),
+                    ),
+                    SizedBox(height: 48,),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),
