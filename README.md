@@ -1,16 +1,14 @@
 # tahoe_effects_example
 
-Demonstrates how to use the tahoe_effects plugin.
+Add native tahoe-styled effects in your Flutter Apps.
+![Preview](docs/preview.png)
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+```bash
+git clone https://github.com/ChabanovX/flutter-glass-example.git
+cd flutter-glass-example/example
+flutter run -d macos # only macos available so far
+```
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
